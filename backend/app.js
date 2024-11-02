@@ -5,8 +5,6 @@ const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/db');
 
-console.log("Mongo URI:", process.env.MONGO_URI);
-
 connectDB();
 
 const app = express();

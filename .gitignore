@@ -3,6 +3,8 @@ node_modules/
 *.log
 .env
 
+data/db
+
 # Logs
 logs
 *.log
