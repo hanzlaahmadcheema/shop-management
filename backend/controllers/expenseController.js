@@ -1,22 +1,17 @@
-// backend/controllers/expenseController.js
 const Expense = require('../models/Expense');
+const Category = require('../models/Category');
 
 // Get all expenses
-exports.getExpenses = async (req, res) => {
-    try {
-        const expenses = await Expense.find();
-        res.json(expenses);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-};
-
-// Create a new expense
+// Create a new expense with category reference
 exports.createExpense = async (req, res) => {
-    const { description, amount, category } = req.body;
-    const expense = new Expense({ description, amount, category });
+    const { description, amount, category, vendor } = req.body;
 
     try {
+        // Check if category exists
+        const categoryExists = await Category.findById(category);
+        if (!categoryExists) return res.status(404).json({ message: 'Category not found' });
+
+        const expense = new Expense({ description, amount, category, vendor });
         const newExpense = await expense.save();
         res.status(201).json(newExpense);
     } catch (error) {
@@ -24,14 +19,21 @@ exports.createExpense = async (req, res) => {
     }
 };
 
+// Get all expenses with populated category details
+exports.getExpenses = async (req, res) => {
+    try {
+        const expenses = await Expense.find()
+            .populate('category', 'name')
+            .populate('vendor', 'name'); // Adjust if vendor also needs population
+        res.json(expenses);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
 // Update an expense by ID
 exports.updateExpense = async (req, res) => {
     try {
-        const updatedExpense = await Expense.findByIdAndUpdate(
-            req.params.id,
-            req.body,
-            { new: true }
-        );
+        const updatedExpense = await Expense.findByIdAndUpdate(req.params.id, req.body, { new: true });
         if (!updatedExpense) return res.status(404).json({ message: 'Expense not found' });
         res.json(updatedExpense);
     } catch (error) {

@@ -1,9 +1,11 @@
 const express = require('express');
+const { getVendors, createVendor, recordVendorPayment, updateVendor, deleteVendor } = require('../controllers/vendorController');
 const router = express.Router();
 
-// Define a test route to ensure it's working
-router.get('/', (req, res) => {
-  res.send('Vendor endpoint is working');
-});
+router.get('/', getVendors);
+router.post('/', createVendor);
+router.post('/payment', recordVendorPayment);
+router.put('/:id', updateVendor);
+router.delete('/:id', deleteVendor);
 
 module.exports = router;
